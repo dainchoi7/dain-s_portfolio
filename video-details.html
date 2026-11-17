@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Details | dain archive</title>
+<link href="assets/img/favicon.png" rel="icon">
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{background:#111;overflow:hidden;font-family:Arial,sans-serif}
+.viewer{position:fixed;inset:0;background:rgba(12,12,12,.97);display:flex;align-items:center;justify-content:center;padding:22px 7vw}
+.viewer-panel{height:calc(100vh - 44px);width:min(100%,1200px);overflow-y:auto;overflow-x:hidden;background:#fff;scrollbar-width:thin;scrollbar-color:#888 #222}
+.viewer-panel::-webkit-scrollbar{width:10px}
+.viewer-panel::-webkit-scrollbar-track{background:#222}
+.viewer-panel::-webkit-scrollbar-thumb{background:#888;border-radius:8px;border:2px solid #222}
+.detail-image{display:block;width:100%;height:auto;margin:0}
+.video-area{width:100%;padding:22px;background:#080808}
+.video-player{display:block;width:100%;height:auto;max-height:75vh;aspect-ratio:16/9;object-fit:contain;background:#000}
+.close-viewer{position:fixed;top:18px;right:20px;width:42px;height:42px;border:0;border-radius:4px;background:rgba(0,0,0,.55);color:#fff;font-size:32px;line-height:1;cursor:pointer;z-index:5}
+.close-viewer:hover{background:#333}
+@media(max-width:700px){.viewer{padding:12px 10px}.viewer-panel{height:calc(100vh - 24px);width:100%}.close-viewer{top:8px;right:8px;width:36px;height:36px;font-size:27px}.video-area{padding:10px}}
+</style>
+</head>
+<body>
+<button class="close-viewer" type="button" aria-label="포트폴리오로 돌아가기" onclick="returnToPortfolio()">×</button>
+<main class="viewer">
+ <div class="viewer-panel" id="viewer-panel">
+  <img class="detail-image" id="project-detail-image" src="" alt="영상 프로젝트 상세 이미지">
+  <div class="video-area" id="video-area">
+   <video id="project-video" class="video-player" controls playsinline preload="metadata">
+    <source id="video-source" src="" type="video/mp4">
+    현재 브라우저에서 동영상을 재생할 수 없습니다.
+   </video>
+  </div>
+ </div>
+</main>
+<script>
+const params = new URLSearchParams(location.search);
+function returnToPortfolio() {
+  const allowedFilters = ['*', '.filter-design', '.filter-video', '.filter-figma', '.filter-teamproject'];
+  const requestedFilter = params.get('from') || '*';
+  const safeFilter = allowedFilters.includes(requestedFilter) ? requestedFilter : '*';
+
+  // If this page was opened from this portfolio, go back to the exact previous
+  // index state (including the selected category and scroll position).
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref && ref.pathname.toLowerCase().endsWith('/index.html')) {
+      history.back();
+      return;
+    }
+  } catch (e) {}
+
+  // Fallback for a directly opened detail URL.
+  location.href = 'index.html?portfolioFilter=' + encodeURIComponent(safeFilter) + '#portfolio';
+}
+const requested=params.get('video')||'01';
+const allowed=['01','02','03','04','05'];
+const id=allowed.includes(requested)?requested:'01';
+const image=document.getElementById('project-detail-image');
+const video=document.getElementById('project-video');
+const source=document.getElementById('video-source');
+if(id==='05'){
+  image.remove();
+  document.getElementById('video-area').style.padding='0';
+  video.style.maxHeight='none';
+}else{
+  image.src='assets/img/details/Detail_V'+id+'.png';
+  image.alt='Video '+id+' 상세 이미지';
+}
+source.src='assets/video/Video_V'+id+'.mp4';
+video.load();
+document.title='Video '+id+' | dain archive';
+</script>
+</body>
+</html>
